@@ -1,0 +1,55 @@
+name: Destroy Packer Infrastructure
+
+on:
+  workflow_dispatch:
+
+env:
+  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+  ARM_CLIENT_SECRET: "${{ secrets.ARM_CLIENT_SECRET }}"
+
+jobs:
+  destroy-packer-infrastructure:
+    runs-on: ubuntu-latest
+    env:
+      tf_actions_working_dir: terraform/client_avd_env
+    defaults:
+        run:
+          working-directory: ${{ env.tf_actions_working_dir }}
+          
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Destroy Infrastructure
+        run: terraform destroy -auto-approve
+
+  destroy-avd-infrstructure:
+    runs-on: ubuntu-latest
+    env:
+      tf_actions_working_dir: terraform/packer_build_infra
+    defaults:
+        run:
+          working-directory: ${{ env.tf_actions_working_dir }}
+          
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Destroy Infrastructure
+        run: terraform destroy -auto-approve
+ 
